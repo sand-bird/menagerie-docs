@@ -1,0 +1,162 @@
+body {
+  font-size: 16px;
+}
+
+.toc-1 a {
+  font-size: 1.4em;
+  position: relative;
+  padding-left: 40px !important;
+}
+.toc-1 a:before {
+  content: "🟆";
+  position: absolute;
+  left: 40px;
+  margin-left: -1.2em;
+}
+
+.toc-2 a {
+  font-size: 1.2em;
+  position: relative;
+  padding-left: 40px !important;
+}
+.toc-2 a:before {
+  content: "\2727";
+  content: "🟅";
+  position: absolute;
+  left: 40px;
+  margin-left: -1.2em;
+}
+
+.toc-3 a {
+  font-size: 1.0em;
+  position: relative;
+  padding-left: 50px !important;
+}
+.toc-3 a:before {
+  content: "🟅";
+  content: "\2727";
+  content: "🟄";
+  position: absolute;
+  left: 50px;
+  margin-left: -1.2em;
+}
+
+.toc-4 a {
+  font-size: 0.9em;
+  position: relative;
+  padding-left: 50px !important;
+}
+.toc-4 a:before {
+  content: "🟄";
+  content: "∙";
+  position: absolute;
+  left: 50px;
+  margin-left: -0.9em;
+}
+
+h1 {
+  font-size: 3.5em;
+  padding-bottom: 0.3em;
+  margin-bottom: 0.5em;
+  box-shadow: inset 0 -3px 1px -1px #aaa;
+}
+
+h2 {
+  font-size: 2.8em;
+  padding-bottom: 0.3em;
+  margin-top: 0.8em;
+  margin-bottom: 0.5em;
+  box-shadow: inset 0 -2px 1px -1px #bbb;
+}
+
+h3 {
+  font-size: 2em;
+  margin-top: 1.2em;
+  padding-bottom: 0.3em;
+  margin-bottom: 0.5em;
+  box-shadow: inset 0 -1px 0px 0px #ccc;
+}
+
+h4 {
+  font-size: 1.6em;
+  padding-bottom: 0.2em;
+  margin-bottom: 0.5em;
+  margin-top: 1.5em;
+/*  box-shadow: inset 0 -1.5px 0px 0px #aaa; */
+}
+
+h1, h2, h3, h4 {
+  color: #2c3e50;
+}
+
+h1:before, h2:before, h3:before, h4:before {
+  color: #b68;
+}
+
+
+h1:before {
+  content: "🟆";
+  padding-right: 0.25em;
+}
+
+
+h2:before {
+  content: "🟅";
+  padding-right: 0.25em;
+}
+
+h3:before {
+  content: "🟄";
+  padding-right: 0.25em;
+}
+
+p {
+  margin: 1em 0;
+}
+
+.dropdown-menu {
+  width: 100%;
+  padding: 0px 0 4px;
+  font-size: inherit;
+/*  background-color: #2c3e50; */
+}
+
+.dropdown-menu > .active > a, .dropdown-menu > .active > a:hover {
+/*  background-color: #1a242f; */
+}
+
+.dropdown-menu li a {
+  padding: 8px 14px;
+/*  color: #fff; */
+}
+
+.dropdown-menu li a:hover {
+  color: #18bc9c;
+}
+
+.navbar-default .navbar-nav > .open > a {
+  color: #18bc9c !important;
+  background-color: #2c3e50 !important;
+}
+
+.navbar-default .navbar-nav > .open.active > a {
+  background-color: #1a242f !important;
+}
+
+.bs-sidebar .nav a {
+  border-right: none !important;
+}
+
+.bs-sidebar .nav > .active > a {
+  box-shadow: inset -3px 0px 1px -1px #18bc9c;
+}
+
+blockquote {
+  padding: 8px 12px;
+  color: #7b8a8b;
+}
+
+blockquote p {
+  font-size: inherit;
+  margin: inherit;
+}

@@ -1,0 +1,25 @@
+site_name: Menagerie Guidebook
+theme:
+    name: flatly
+    custom_dir: themes/toc_only
+extra_css: css/custom.css
+pages:
+    - 'Introduction': 'index.md'
+    - 'Syntax & Formatting':
+        - 'Data Files': 'syntax.md'
+        - 'Conditions': 'conditions.md'
+    - 'Data Specifications':
+        - 'Monsters': 'monsters.md'
+        - 'Items': 'items.md'
+        - 'Objects': 'objects.md'
+        - 'NPCs': 'npcs.md'
+        - 'Locations': 'locations.md'
+        - 'Events': 'events.md'
+        - 'Requests': 'requests.md'
+        - 'Contacts': 'contacts.md'
+extra_css: 
+    - css/custom.css
+markdown_extensions:
+    - markdown.extensions.admonition
+    - markdown.extensions.toc
+    - markdown.extensions.meta
