@@ -5,18 +5,20 @@ theme:
 extra_css: css/custom.css
 pages:
     - 'Introduction': 'index.md'
-    - 'Syntax & Formatting':
-        - 'Data Files': 'syntax.md'
+    - 'General Information':
+        - 'Terminology': 'terminology.md'
+        - 'Data Files': 'data_files.md'
+        - 'Loading Mods': 'loading_mods.md'
         - 'Conditions': 'conditions.md'
     - 'Data Specifications':
-        - 'Monsters': 'monsters.md'
-        - 'Items': 'items.md'
-        - 'Objects': 'objects.md'
-        - 'NPCs': 'npcs.md'
-        - 'Locations': 'locations.md'
-        - 'Events': 'events.md'
-        - 'Requests': 'requests.md'
-        - 'Contacts': 'contacts.md'
+        - 'Monsters': 'specs/monsters.md'
+        - 'Items': 'specs/items.md'
+        - 'Objects': 'specs/objects.md'
+        - 'NPCs': 'specs/npcs.md'
+        - 'Locations': 'specs/locations.md'
+        - 'Events': 'specs/events.md'
+        - 'Requests': 'specs/requests.md'
+        - 'Contacts': 'specs/contacts.md'
 extra_css: 
     - css/custom.css
 markdown_extensions:

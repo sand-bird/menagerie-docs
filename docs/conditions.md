@@ -4,8 +4,8 @@ Many things in *Menagerie* only happen or become available under certain circums
 
 These **conditions** are a property of the entity they affect, so they're defined in the entity's data file using a special **condition syntax** specific to *Menagerie*. As a simple example, here's a condition requiring that the player have at least five thousand aster, the game's currency:
 
-```
-{ ">=": ["$player.money", 5000] }
+```json
+{">=": ["$player.money", 5000]}
 ```
 
 All conditions are *dictionaries* with one *key*, the **operator**, and one *value*, an **array of arguments**. (There are, however, a couple of shortcuts that break this convention, which we'll get to in a bit.)
@@ -27,35 +27,43 @@ To denote a variable within a condition, we just use a plain ol' string represen
 
 ### Global Variables
 
-Using a **global variable** in a condition lets you access aspects of the game itself. Global variables are annotated with `$`, and they come in several delicious flavors -- most of which correspond more or less directly to system classes in the game's code, like `Player` and `Time`. You can think of these flavors as *categories*: we're really interested in the **properties** of the classes they represent, which we can access by joining them with a period (`.`), like this:
+Structurally, you can think of *Menagerie* as a thing of two complimentary halves. Entites -- anything defined using data files -- make up one half. The other half is "the system", or "the game": mostly, it handles the logic that makes things run, but it also holds quite bit of *state* -- that is, variables that describe things about it. These are **global variables**.
 
-```
+!!! trivia
+    **State** is another programming term -- when we use it to describe software constructs, anyway. Really, though, it applies to anything: the state of a door (open or closed, locked or unlocked, oiled or creaky); the state of a relationship; the state of the union; a person's mental or emotional state. (Not the political concept of a state, though -- that one's different.)
+
+Global variables are annotated with `$` and come in several delicious flavors, most of which correspond directly to *system classes* in the game's code, like `Player` and `Time`. For conditions, accessing these system classes themselves is neither useful nor a good idea. Instead, think of them as *categories*: we're really interested in their **properties**, which we can access with a period (`.`), like this:
+
+```json
 $player.money
 ```
 
 Look familiar?
 
-All the global variables are listed below, along with some information about what they contain. 
+The following is a complete list of the global properties accessible through *Menagerie*'s condition syntax, along with some information about what they contain.
 
 #### $player
 
-Properties of the player character, accessed through the `Player` singleton (`res://system/player.gd`), and saved to the `player.save` file. (Technically, a few other global variables, like `$encyclopedia` and `$inventory`, are also properties of `Player`, but they're important enough to have top-level shortcuts.)
+Properties of the player character, accessed through the `Player` *singleton* (`res://system/player.gd`), and saved to the `player.save` file. 
+
+!!! trivia
+    A few other global variables, like `$encyclopedia` and `$inventory`, are technically also properties of `Player`, but they're important enough to have their own shortcuts in the syntax.
 
 | property | type | description |
 | --- | --- | --- |
 | `playtime` | number | Total playtime in seconds |
 | `money` | number | Player's wealth in Aster |
-| `name` | string | Whatever the player entered as their name when they started the game. |
+| `name` | string | Whatever the player entered as their name when they started the game |
 | `experience` | number | Player's total experience points |
 | `level` | number | Player's current level |
 
 
 #### $garden
 
-Properties of the garden, including collections of the entities -- monsters, items, and objects -- inside, which can be used to access their properties. This information is saved to the `garden.save` file. 
+Properties of the garden, including collections of the entities -- monsters, items, and objects -- inside, which can be used to access *their* properties. This information is saved to the `garden.save` file. 
 
 !!! trivia
-    Unlike `Player`, there is no singleton class for the garden: since its purpose is to host instanced nodes for all the entities inside it, it exists as an instanced node itself, `root/game/garden` in the scene tree.
+    Unlike `Player`, there is no singleton class for the garden: since its purpose is to host *instanced nodes* for all the entities inside it, it exists as an instanced node itself, `root/game/garden` in the scene tree.
 
 | property | type | description |
 | --- | --- | --- |
@@ -63,9 +71,9 @@ Properties of the garden, including collections of the entities -- monsters, ite
 | `item_count` | number | Number of items in the garden |
 | `object_count` | number | Number of objects in the garden |
 | `terrain` | TileMap | The terrain values for every tile in the garden  |
-| `monsters` | Dictionary | A dictionary containing every monster resident in the garden. Its keys are the monsters' **unique IDs**, and its values are references to the **actual monster entity**, from which the monster's individual properties can be accessed. |
-| `items` | Dictionary | A dictionary containing every item in the garden. Again, its keys are the items' **unique IDs**, and its values are references to the **actual item entity**. |
-| `objects` | Dictionary | A dictionary containing every object (that is, anything placeable on the grid) in the garden. Its keys are the objects' **unique IDs**, and its values are references to the **actual object entity**. |
+| `monsters` | Dictionary | A dictionary containing every monster resident in the garden. Its keys are the monsters' **unique IDs**, and its values are references to the monster's **game object**, from which its individual properties can be accessed. |
+| `items` | Dictionary | A dictionary containing every item in the garden. Again, its keys are the items' **unique IDs**, and its values are references to the item's **game object**. |
+| `objects` | Dictionary | A dictionary containing every object (that is, anything placeable on the grid) in the garden. Its keys are the objects' **unique IDs**, and its values are references to the object's **game object**. |
 | `tier` | number | The tier of the garden, reflecting how much it's been upgraded; see the `GARDEN_TIER` constant. |
 
 #### $time
@@ -103,11 +111,14 @@ Of course, a house is more than its blueprint -- the interior decorations, the l
 
 A local variable is prefixed by the sigil `@`, like so:
 
-```
-{ ">": [ "@mood", 30 ] }
+``` json
+{">": [ "@mood", 30 ]}
 ```
 
-We want somebody's `mood` to be greater than 30, but whose?
+This condition expects somebody's `mood` to be greater than 30. But whose?
+
+!!! note
+    `mood` is a property of monsters, so this example would probably be found in the data definition for a Monster.
 
 Well, it depends on the context. When used alone like this, it refers to the `mood` of any entity of the kind described by the data type -- any house matching the blueprint. For example, in the data file for a monster, we can use conditions to specify some *requirements* for that monster to drop certain resources, or to evolve in certain ways. Every monster of that species is subject to those requirements, and *fills local variables with its own individual properties* to evaluate whether that condition is `true` or `false` *for itself*.
 
@@ -190,22 +201,16 @@ WATER
 
 ## Operators
 
-The condition at the beginning of this page features a greater-than-or-equal-to operator, which is an example of a **comparison operator** (or **comparator** for short). Here's slightly more complex condition showing off some other kinds of operators:
+The condition at the beginning of this page features a `">="` operator, which is an example of a **comparison operator** (or **comparator** for short). Here's slightly more complex condition showing off some other kinds of operators:
 
 ```
-{
-  "and": [
-    {
-      "==": ["$time.day", "#DAY.FRIDAY"]
-    },
-    { 
-      "in": ["bubbling_drink", "$inventory.items"] 
-    }
-  ]
-}
+{"and": [
+    {"==": ["$time.day", "#DAY.FRIDAY"]},
+    {"in": ["bubbling_drink", "$inventory.items"]}
+]}
 ```
 
-Are you ready for a good time? This condition returns true if it's Friday and the player has an item with the id `bubbling_drink` in their inventory. Here we see the comparator `"!="`, which stands for "not equals", the **relational operator** `"in"`, and the **boolean operator** `"and"`. Let's take these categories one at a time.
+Are you ready for a good time? This condition returns true if it's Friday and the player has an item with the id `bubbling_drink` in their inventory. Here we see the comparator `"!="`, which stands for "not equals", the **relational operator** `"in"`, and the **boolean operator** `and`. Let's take these categories one at a time.
 
 
 ### Relational Operators
@@ -226,13 +231,13 @@ The relational operators used in *Menagerie*'s condition syntax are as follows:
 | `"<="` | the first argument is **less than or equal to** the second
 | `"in"` | the first argument is a **member of** the second |
 
-The `"in"` operator is a little bit special, since it's the only relational operator in the list that isn't also a comparator. Instead, the `"in"` operator has a special requirement: its second argument must be a **collection** of values, either a dictionary or an array. 
+The `"in"` operator is a little bit special, since it's the only relational operator in the list that isn't also a comparator. Instead, the `"in"` operator has a special requirement: its second argument must be a *collection* of values, either a dictionary or an array. 
 
-(TODO: check if you can `in` a string)
+(TODO: check if you can `"in"` a string)
 
 ### Boolean Operators
 
-A condition is actually a **boolean value** -- something that is either `true` (when the condition is met), or `false` (when the condition is not met). We've seen that relational operators will return `true` or `false` depending on the relationship between the two values they're given, for example.
+A condition is actually a *boolean value* -- something that is either `true` (when the condition is met), or `false` (when the condition is *not* met). We've seen that relational operators will return `true` or `false` depending on the relationship between the two values they're given, for example.
 
 But what about conditions that depend on multiple relationships? Our last example was one such case: the player must have a `bubbling_drink` in their inventory, *and* it must be Friday. The key here is the `"and"` operator, which requires that *both those conditions be `true` at the same time*.
 
@@ -243,25 +248,19 @@ Along with its partner `"or"`, the `"and"` operator is known as a **boolean oper
 | `"and"` | **all** of the arguments are `true` |
 | `"or"` | **at least one** of the arguments is `true` |
 
-!!! tip
-    If you enjoy writing conditions, you might appreciate **boolean logic**, a whole subfield of mathematics that deals with `true` and `false` values, in which the simple `and` and `or` that we use here are the building blocks for many other, more complex operations. Or, if you prefer something a little less abstract, you might also enjoy *applied* boolean logic -- otherwise known as computer engineering.
 
 #### Shortcut
 
-Because the `"and"` operator is so important, it has a special shortcut. Remember how a condition must always be a **dictionary** with the condition's operator as its only key? If *Menagerie* finds an **array** instead, it will treat it as though it were the *argument array of an `"and"` condition*. The shortcut, then, is to omit the dictionary and the `"and"` operator, like so:
+Because the `"and"` operator is so important, it has a special shortcut. Remember how a condition must always be a *dictionary* with the operator as its only key? If *Menagerie* finds an *array* instead, it will treat it as though it were the *argument array* of an `"and"` operator, like so:
 
 ``` json
 [
-  {
-    "==": ["$time.day", "#DAY.FRIDAY"]
-  },
-  { 
-    "in": ["bubbling_drink", "$player.inventory"] 
-  }
+  {"==": ["$time.day", "#DAY.FRIDAY"]},
+  {"in": ["bubbling_drink", "$player.inventory"]}
 ]
 ```
 
-This will be resolved the same way as the full `bubbling_drink` example from before.
+This is equivalent to the full `bubbling_drink` example from before.
 
 !!! trivia
     The programmer jargon for this sort of thing is "syntactic sugar", which refers to any alternate, more convenient syntax for some functionality.
@@ -271,58 +270,168 @@ This will be resolved the same way as the full `bubbling_drink` example from bef
 Let's say we're creating an event, and we want it to happen on *Tuesdays and Thursdays*. We might first try something like this:
 
 ``` json
-{
-  "and": [
-    {
-      "==": ["$time.day", "#DAY.TUESDAY"]
-    },
-    {
-      "==": ["$time.day", "#DAY.THURSDAY"]
-    }
-  ]
-}
+{"and": [
+    {"==": ["$time.day", "#DAY.TUESDAY"]},
+    {"==": ["$time.day", "#DAY.THURSDAY"]}
+]}
 ```
 
 This is a perfectly-written condition, except for one little problem... it will never return `true`! To understand why, you have to learn to **think in boolean**: even though `and` and `or` are English words, they don't mean the same thing as their natural-language counterparts, so you must take care when "translating" from one to the other. 
 
 For example, if you ask your friend, "do you want to go to the movies **or** the park," she'd probably *choose one* (or she might respond with "neither, how about the beach?"). But what if you asked a computer that only understood boolean `or`? You might still get a "neither," or `false`. But if the computer liked one of your suggestions, it wouldn't tell you which one -- it would just say "sure!" (`true`).
 
-So, let's try and consider our example from a computer's perspective. In natural English, you want the event to be available on Tuesday **and** Thursday. But remember, the `"and"` operator returns `true` if **all of** the arguments are `true`. What are the arguments?
+So, let's try and consider our example from a computer's perspective. In natural English, you want the event to be available on Tuesday *and* Thursday. But remember, the `"and"` operator returns `true` if *all of* the arguments are `true`. What are the arguments?
 
-```
-{ "==": ["$time.day", "#DAY.TUESDAY"] }
+```json
+{"==": ["$time.day", "#DAY.TUESDAY"]}
 ```
 "Today is Tuesday."
 
-```
-{ "==": ["$time.day", "#DAY.THURSDAY"] }
+```json
+{"==": ["$time.day", "#DAY.THURSDAY"]}
 ```
 "Today is Thursday."
 
 See the problem? Yep -- that `"and"` operator is telling the game that for the condition to be `true`, today needs to be *both* Tuesday *and* Thursday!
 
-To avoid pitfalls like these, it often helps to rephrase your intention to match the logical structure of conditions as closely as possible. Start from the simplest parts -- relations, like "today is Tuesday," -- and build up from there. When you phrase expectations this way, the right boolean operator comes naturally:
+To avoid pitfalls like these, always try to phrase your intention so that it matches the structure of conditions as closely as possible. Start from the simplest parts -- relations, like "today is Tuesday," -- and build up from there. When you phrase expectations this way, the right boolean operator comes naturally:
 
 > The event should be available if today is Tuesday, ***or*** if today is Thursday.
 
 !!! tip
     Like just about any other kind of programming, there's often more than one way to write a condition. Instead of using an `"=="` condition for each valid day, you could also list them out with an as an array, and use the `"in"` operator to check if the current day is a member of the list:
     
-    ```
-    {
-      "in": [ 
-        "$time.day",
-        [ "#DAY.TUESDAY", "#DAY.THURSDAY" ]
-      ]
-    }
-    ```
+        {"in": [
+          "$time.day", 
+          ["#DAY.TUESDAY", "#DAY.THURSDAY"] 
+        ]}
 
-    We'll see more examples of
+    We'll see more examples like this one in the section [Putting it All Together](#).
     
+!!! tip
+    If you enjoy writing conditions, you might appreciate **boolean logic**, a whole subfield of mathematics that deals with `true` and `false` values, in which the simple `and` & `or` that we use here are the building blocks for extraordinarily complex operations. (Raymond Smullyan's classic puzzle anthology *What is the Name of This Book?* is a fantastically fun introduction to the topic. Or, if you prefer something a little more practical, you might also enjoy *applied* boolean logic -- more commonly known as computer engineering.)
 
-### Data Operators
 
-Using the `"in"` operator
+## Data Operators
+
+There is a third-generation Pokémon called [Shedinja](https://bulbapedia.bulbagarden.net/wiki/Shedinja_(Pokémon)) with a rather unique evolutionary requirement: when your Nincada -- a cicada-inspired Pokémon -- evolves normally into a Ninjask, Shedinja -- the "shed Pokémon" -- will spontaneously appear in your party as long as you have an empty slot and a spare Pokéball.
+
+One of the major goals of *Menagerie*'s data structure is to enable similarly complex behavior -- extensibly, modularly. We've already learned how to use global and local variables to access various bits of the game state. But we can't access *everything* that way -- so to make our own Shedinja, we're going to neet to manipulate the data we can get from those variables. **Data operators** let us do just that.
+
+### get
+
+We've already seen the `"get"` operator in action: it's the period (`.`) in `$player.money` and `#day.tuesday`. That's actually the short form: in its full glory, `"get"` looks a lot like any other condition operator:
+
+```
+{"get": [
+  "$player", "money"
+]}
+```
+
+!!! trivia
+    When *Menagerie* parses -- that is, reads and inteprets -- conditions, it actually converts the `.` form of `"get"` to its full form before resolving it. You can use the full form in your conditions if you want, though the `.` form is a lot more readable. 
+
+The `"get"` operator takes two *arguments*, and they must both be *strings*. (This is a given when using the `.` form, since it's already in the middle of a string, and the arguments are whatever's on either side; if you decide to use the full form, though, it's something to keep in mind.)
+
+The first argument (on the left side of the `.` in the short form) is the **parent**, and the second (on the right side) is the **key**. The key identifies a property of the parent. When the condition is evaluated, *Menagerie* checks if that property actually exists; if it does, the result of the `"get"` operation will be the value of that property.
+
+You can use multiple `"get"` operators within a single string:
+
+```
+$data.monsters.pufig.description
+```
+
+This example grabs the `description` string -- the flavor text that shows up on encyclopedia pages, in the inventory (for Items and Objects), and in shops -- from the Monster with ID `pufig`.
+
+The parent in a `get` operation can be *either a **dictionary** or a **game object*** -- it works the same either way. You can see this in our example above: `$data` is a game object (the `Data` system class) with a property called `monsters`, which contains a dictionary with a key called `pufig`, which contains yet another dictionary with all of Pufig's data inside (including its description text under the key `description`).
+
+### map
+
+The `map` operator is `get`'s big sister. Like `get`, it has a short form -- the colon (`:`) -- as well as a full form. Here it is in action:
+
+```
+$garden.monsters:given_name
+```
+
+or, in long form,
+
+```
+{ "map" [
+  "$garden.monsters",
+  "given_name"
+]}
+```
+
+This will return an array containing the `given_name` for every monster in your garden, like this:
+
+```
+[ "Fido", "Bumblebottom", "Hedwig", "Mr. Pie", ... ]
+```
+
+How does it work? Basically the same way as `get` -- `map` takes two string arguments, and like `get`, the *second* argument (the right side, in the `:` form) is a **key** that identifies the property we want. 
+
+But `map` has one weird twist: the *first* argument (the left side in the `:` form). With `get`, the first argument is the *parent*, the dictionary or game object containing our key. With `map`, it's the **grandparent**: a *collection* -- either a dictionary or array -- of *parents*. When you use `map` on grandparent and a key, it tries to `get` that key from each of the grandparent's children, and returns all of the results together in an array.
+
+!!! note
+    For those from a programming background: `{"map":["grandparent","key"]}` is roughly equivalent to `grandparent.map{|p| p.key}` in Ruby, or `map(lambda p: p.key, grandparent)` in Python. If `grandparent` is a dictionary, it maps over `grandparent.keys` instead.
+
+Don't worry if this is confusing at first! `map` one of the more advanced operators -- it requires advanced knowledge of *Menagerie*'s data structure to use effectively, and likely some practice too.
+
+### filter
+
+Our final and most complicated data operator (for now!) is `filter`. Unlike `get` and `map`, it has one form only:
+
+```
+{ "filter": [
+  "$garden.monsters",
+  { ">": [
+    "*.iq", 30
+  ]}
+]}
+```
+
+`filter` accepts two arguments: the first, as with `map`, is a string that must resolve to a **collection** (a dictionary or array, though not a game object). The second argument is a **condition**. 
+
+As the name implies, `filter` will filter the collection according to the condition: it returns a collection just like the one it was given, but only the items that cause the condition to return `true` will be included.
+
+Accordingly, the condition inside a filter should depend in some way on the items in a collection. We can accomplish this with two new, special sigils: `*` and `^`.
+
+#### *
+
+The `filter` and `map` operators -- those that require *collections* as their first argument -- work by going through every item in the collection, one at a time. For `filter`, this means that the second argument, the condition, is evaluated over and over again, once for every item in the collection. The `*` sigil connotes that item.
+
+To illustrate, let's revisit our `filter` example above. This filter is operating on the collection `$garden.monsters`, and its condition is as follows:
+
+```
+{">": [ "*.iq", 30 ]}
+```
+
+First, let's consider the collection, `$garden.monsters`. As described in the [Global Variables](#) section of this guide, `$garden.monsters` is a dictionary. Its keys are the *unique IDs* of the monsters in the garden -- not Entity IDs, which are chosen by human authors, but long, random sequences generated inside the game by an algorithm whenever a new monster is born or received.
+
+#### ^
+
+
+
+### Advanced usage
+
+Let's revisit our `map` example for a second:
+
+```
+$garden.monsters:given_name
+```
+
+is the same as
+
+```
+{ "map": [
+  "$garden.monsters",
+  "given_name"
+]}
+```
+
+Notice that `"$garden.monsters"`? Yep, that's a `get` inside a `map`. This is why *Menagerie* converts the `.` and `:` forms of `get` and `map` to their long forms before it resolves them -- it needs to resolve `"$garden.monsters"` before it can do a `map` on it
+
+## Putting it all together
 
 ----
 
@@ -531,3 +640,87 @@ Using the `"in"` operator
 ```
 {"get":[{"map":[{"map":[{"map":[{"get":["$garden","monsters"]},"*"]},"preferences"]},"monsters"]},"@id"]}
 ```
+
+.
+
+.
+
+.
+
+.
+
+
+1. Basic comparison
+-------------------
+
+Type A:
+```````````````````````````````````````````````````````````
+{ ">": [ "$player.money", 5000 ] }
+```````````````````````````````````````````````````````````
+Type B:
+```````````````````````````````````````````````````````````
+[ ">", "$player.money", 5000 ]
+```````````````````````````````````````````````````````````
+
+
+2. Boolean AND on multiple comparisons
+--------------------------------------
+
+Type A:
+```````````````````````````````````````````````````````````
+{ "and": [
+    { ">": [ "$player.money", 5000 ] },
+    { "in": [ 
+        "$time.day",  
+        [ "#day.tuesday", "#day.wednesday" ]
+    ] }
+] }
+```````````````````````````````````````````````````````````
+
+Type A (shorthand):
+```````````````````````````````````````````````````````````
+[
+  {">": [ "$player.money", 5000 ]},
+  {"in": [
+      "$time.day",  
+      ["#day.tuesday", "#day.wednesday"]
+  ]}
+]
+```````````````````````````````````````````````````````````
+
+Type B:
+```````````````````````````````````````````````````````````
+[ "and", 
+  [ ">", "$player.money", 5000 ],
+  [ "in", 
+    [ "$time.day", 
+      [ "#day.tuesday", "#day.wednesday" ] ] ] ]
+```````````````````````````````````````````````````````````
+
+Type B (shorthand):
+```````````````````````````````````````````````````````````
+[ [ ">", "$player.money", 5000 ],
+  [ "in", 
+    [ "$time.day",  
+      [ "#day.tuesday", "#day.wednesday" ] ] ] ]
+```````````````````````````````````````````````````````````
+
+
+
+3. Filtering data via boolean expression
+----------------------------------------
+
+A:
+```````````````````````````````````````````````````````````
+{ "filter": [ 
+    "$garden.monsters",
+    { "==": ["*.id", "@partner.id"] }
+] }
+```````````````````````````````````````````````````````````
+
+B:
+```````````````````````````````````````````````````````````
+[ "filter",
+  "$garden.monsters",
+  [ ">=", "*.", 30 ] ]
+```````````````````````````````````````````````````````````

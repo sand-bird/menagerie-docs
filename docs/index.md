@@ -2,10 +2,15 @@
 
 Hi there! If you're interested in modding *Menagerie*, you're in the right place. This here is the **Menagerie Guidebook**, a *luxuriously detailed* reference document for *Menagerie* content creation. 
 
-I put this book together as a reference for myself over the course of developing the game. It's split into two main parts: **Syntax & Formatting** details the nuts and bolts of *Menagerie*'s data files, while **Data Specifications** contains definitions and examples for every type of entity in the game.
+I put this book together as a reference for myself over the course of developing the game. It's split into two main parts: the **[General Information](#)** section details the nuts and bolts of *Menagerie*'s data files, while the **[Data Specifications](#)** section details the *schemas* -- lists of all required *and* optional properties, and the types of information they should contain -- for every kind of Entity in the game, with plenty of explanations and examples for each.
 
 
-## Getting Started
+### How to Use This Guide
+
+The Guidebook is equal parts reference and tutorial. 
+
+
+### Getting Started
 
 Mods in *Menagerie* consist of `.json` (JSON data), `.png` (image), `.tres` (Godot resource) and/or `.tscn` (Godot scene) files. These are the same types of files the actual game is built from, and for a mod to work, they must be organized in roughly the same way. When *Menagerie* launches, it looks in a few special directories for mod files, and then supplements or replaces the base game files accordingly.
 

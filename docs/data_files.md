@@ -1,6 +1,8 @@
-# Data Syntax
+# Data Files
 
 *Menagerie* was designed from the beginning to be easily moddable, so just about all of the game's content is data-driven -- that is, it's stored in **data files**, which can be added, removed, or changed without having to poke around in the actual code.
+
+If you haven't yet, it might be a good idea to consult the [Terminology](#) section of this guide.
 
 ## File Format
 
@@ -28,7 +30,7 @@ All of *Menagerie*'s data files are in the venerable JSON format, which is simpl
     "arrays have no keys, only values!",
   	456,
   	{
-  	  "inside a dictionary inside an array": "(remember, arrays don't have keys)",
+  	  "inside a dictionary inside an array": 42,
   	  "^%$#@special characters are a-ok!*&(;": "...except backslash \\",
   	  "789": "numerical keys need quotes too"
   	}
@@ -50,71 +52,10 @@ A few things to note:
 
 Although they're in JSON format, data files in *Menagerie* have the `.data` extension. 
 
-## File Structure
+## Common Properties
 
-Mods for *Menagerie* must mimic the file structure of the game, which is as follows:
+Every data specification has
 
-```
-game/
-|-- assets/
-|   |-- game/
-|   |-- sound/
-|   `-- ui/
-|-- data/
-|   |-- items/
-|   |-- objects/
-|   |-- monsters/
-|   |-- npcs/
-|   |-- locations/
-|   |-- requests/
-|   `-- events/
-|-- garden/
-|   |-- item/
-|   |-- object/
-|   `-- monster/
-|-- world/
-|   |-- npc/
-|   |-- location/
-|   |-- request/
-|   `-- event/
-|-- system/
-`-- ui/
-```
-
-(To view the full file structure, check out the game's source code [here](https://github.com/sand-bird/menagerie).)
-
-### Entities
-
-An **Entity** in *Menagerie* is, basically, "a thing" -- it can be any piece of content that gets loaded from data. Entities are identified by a unique **id**.
-
-!!! note
-    test
-
-Putting this all together, a mod to add an item, the `lightningstone`, and two new monsters, `pikablu` and `raiblu`, would include the following files and folders:
-
-```
-my_mod/
-`-- data/
-    |-- items/
-    |   `-- lightningstone/
-    |       |-- lightningstone.data
-    |       `-- some_icon.png
-    `-- monsters/
-        |-- pikablu/
-        |   |-- pikablu.data
-        |   `-- images/
-        `-- raiblu/
-            |-- raiblu.data
-            `-- images/
-```
-
-That's it!
-
-
-Additionally, for the game to recognize the name of the main data file for an entity must match the name of the folder it's in.
-
-
-
-## Sigils
+## Resources
 
 
