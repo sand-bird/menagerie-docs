@@ -2,7 +2,7 @@
 
 Many things in *Menagerie* only happen or become available under certain circumstances. A flower that only blooms when it's raining on a Tuesday, a collection of items that merchants will only sell when you've completed a certain number of requests for them, or a monster that evolves into one form when its intelligence is above a certain level, and a different form otherwise -- the possibilities are pretty much endless.
 
-These **conditions** are a property of the entity they affect, so they're defined in the entity's data file using a special **condition syntax** specific to *Menagerie*. As a simple example, here's a condition requiring that the player have at least five thousand aster, the game's currency:
+These **conditions** are a property of the [entity](/terminology/#entity-entity) they affect, so they're defined in the entity's [data file](/terminology/#data-file) using a special **condition syntax** specific to *Menagerie*. As a simple example, here's a condition requiring that the player have at least five thousand aster, the game's currency:
 
 ```json
 {">=": ["$player.money", 5000]}
@@ -14,7 +14,7 @@ Of special interest in the above example are `"$player.money"` and `">="` -- a *
 
 ## Variables
 
-A condition wouldn't be very useful if it always had the same result. In fact, the whole point of a conditional is that its value *depends* on *things that can change* -- **variables**.
+A condition wouldn't be very useful if it always had the same result. In fact, the whole point of a condition is that its value *depends* on *things that can change* -- **variables**.
 
 Since *Menagerie*'s conditions live in data files, they must adhere to proper JSON syntax, just like the rest of the file. Of course, JSON only supprts a few types of values -- numbers, strings, booleans, arrays, and dictionaries -- and none of those are variables. So, what do we do...?
 
@@ -27,7 +27,7 @@ To denote a variable within a condition, we just use a plain ol' string represen
 
 ### Global Variables
 
-Structurally, you can think of *Menagerie* as a thing of two complimentary halves. Entites -- anything defined using data files -- make up one half. The other half is "the system", or "the game": mostly, it handles the logic that makes things run, but it also holds quite bit of *state* -- that is, variables that describe things about it. These are **global variables**.
+Structurally, you can think of *Menagerie* as a thing of two complimentary halves. [Entities](/terminology/#entity-entity) -- anything defined using data files -- make up one half. The other half is "the system", or "the game", which handles the logic that makes things run. But it also contain quite bit of *state* -- that is, variables that describe things about it. Conditions will often depend on some aspect of the game's state, so they must be able to access it somehow. That's where **global variables** come in.
 
 !!! trivia
     **State** is another programming term -- when we use it to describe software constructs, anyway. Really, though, it applies to anything: the state of a door (open or closed, locked or unlocked, oiled or creaky); the state of a relationship; the state of the union; a person's mental or emotional state. (Not the political concept of a state, though -- that one's different.)
@@ -210,7 +210,7 @@ The condition at the beginning of this page features a `">="` operator, which is
 ]}
 ```
 
-Are you ready for a good time? This condition returns true if it's Friday and the player has an item with the id `bubbling_drink` in their inventory. Here we see the comparator `"!="`, which stands for "not equals", the **relational operator** `"in"`, and the **boolean operator** `and`. Let's take these categories one at a time.
+Are you ready for a good time? This condition returns true if it's Friday and the player has an item with the id `bubbling_drink` in their inventory. Here we see the comparator `"!="`, which stands for "not equals", the **relational operator** `"in"`, and the **boolean operator** `"and"`. Let's take these categories one at a time.
 
 
 ### Relational Operators
@@ -301,10 +301,12 @@ To avoid pitfalls like these, always try to phrase your intention so that it mat
 !!! tip
     Like just about any other kind of programming, there's often more than one way to write a condition. Instead of using an `"=="` condition for each valid day, you could also list them out with an as an array, and use the `"in"` operator to check if the current day is a member of the list:
     
-        {"in": [
-          "$time.day", 
-          ["#DAY.TUESDAY", "#DAY.THURSDAY"] 
-        ]}
+    ```json
+    {"in": [
+      "$time.day", 
+      ["#DAY.TUESDAY", "#DAY.THURSDAY"] 
+    ]}
+    ```
 
     We'll see more examples like this one in the section [Putting it All Together](#).
     
@@ -322,7 +324,7 @@ One of the major goals of *Menagerie*'s data structure is to enable similarly co
 
 We've already seen the `"get"` operator in action: it's the period (`.`) in `$player.money` and `#day.tuesday`. That's actually the short form: in its full glory, `"get"` looks a lot like any other condition operator:
 
-```
+```json
 {"get": [
   "$player", "money"
 ]}
@@ -331,9 +333,9 @@ We've already seen the `"get"` operator in action: it's the period (`.`) in `$pl
 !!! trivia
     When *Menagerie* parses -- that is, reads and inteprets -- conditions, it actually converts the `.` form of `"get"` to its full form before resolving it. You can use the full form in your conditions if you want, though the `.` form is a lot more readable. 
 
-The `"get"` operator takes two *arguments*, and they must both be *strings*. (This is a given when using the `.` form, since it's already in the middle of a string, and the arguments are whatever's on either side; if you decide to use the full form, though, it's something to keep in mind.)
+The `"get"` operator takes two *arguments*, and they must both be *strings*. This is a given when using the `.` form, since it's already in the middle of a string, and the arguments are whatever's on either side. If you decide to use the full form, though, it's something to keep in mind.
 
-The first argument (on the left side of the `.` in the short form) is the **parent**, and the second (on the right side) is the **key**. The key identifies a property of the parent. When the condition is evaluated, *Menagerie* checks if that property actually exists; if it does, the result of the `"get"` operation will be the value of that property.
+The first argument (on the left side of the `.` in the short form) is the **parent**, and the second (on the right side) is the **key**. The key identifies a *property* of the parent. When the condition is evaluated, *Menagerie* checks if that property actually exists; if it does, the result of the `"get"` operation will be the value of that property.
 
 You can use multiple `"get"` operators within a single string:
 
@@ -343,11 +345,11 @@ $data.monsters.pufig.description
 
 This example grabs the `description` string -- the flavor text that shows up on encyclopedia pages, in the inventory (for Items and Objects), and in shops -- from the Monster with ID `pufig`.
 
-The parent in a `get` operation can be *either a **dictionary** or a **game object*** -- it works the same either way. You can see this in our example above: `$data` is a game object (the `Data` system class) with a property called `monsters`, which contains a dictionary with a key called `pufig`, which contains yet another dictionary with all of Pufig's data inside (including its description text under the key `description`).
+The parent in a `"get"` operation can be *either a **dictionary** or a **game object*** -- it works the same either way. You can see this in our example above: `$data` is a game object (the `Data` system class) with a property called `monsters`, which contains a dictionary with a key called `pufig`, which contains yet another dictionary with all of Pufig's data inside (including its description text under the key `description`).
 
 ### map
 
-The `map` operator is `get`'s big sister. Like `get`, it has a short form -- the colon (`:`) -- as well as a full form. Here it is in action:
+The `"map"` operator is `"get"`'s big sister. Like `"get"`, it has a short form -- the colon (`:`) -- as well as a full form. Here it is in action:
 
 ```
 $garden.monsters:given_name
@@ -355,8 +357,8 @@ $garden.monsters:given_name
 
 or, in long form,
 
-```
-{ "map" [
+```json
+{ "map": [
   "$garden.monsters",
   "given_name"
 ]}
@@ -368,20 +370,20 @@ This will return an array containing the `given_name` for every monster in your 
 [ "Fido", "Bumblebottom", "Hedwig", "Mr. Pie", ... ]
 ```
 
-How does it work? Basically the same way as `get` -- `map` takes two string arguments, and like `get`, the *second* argument (the right side, in the `:` form) is a **key** that identifies the property we want. 
+How does it work? Basically the same way as `"get"` -- `"map"` takes two string arguments, and like `"get"`, the *second* argument (the right side, in the `:` form) is a **key** that identifies the property we want. 
 
-But `map` has one weird twist: the *first* argument (the left side in the `:` form). With `get`, the first argument is the *parent*, the dictionary or game object containing our key. With `map`, it's the **grandparent**: a *collection* -- either a dictionary or array -- of *parents*. When you use `map` on grandparent and a key, it tries to `get` that key from each of the grandparent's children, and returns all of the results together in an array.
+But `"map"` has one weird twist: the *first* argument (the left side in the `:` form). With `"get"`, the first argument is the *parent*, the dictionary or game object containing our key. With `"map"`, it's the **grandparent**: a *collection* -- either a dictionary or array -- of *parents*. When you use `"map"` on grandparent and a key, it tries to `"get"` that key from each of the grandparent's children, and returns all of the results together in an array.
 
 !!! note
     For those from a programming background: `{"map":["grandparent","key"]}` is roughly equivalent to `grandparent.map{|p| p.key}` in Ruby, or `map(lambda p: p.key, grandparent)` in Python. If `grandparent` is a dictionary, it maps over `grandparent.keys` instead.
 
-Don't worry if this is confusing at first! `map` one of the more advanced operators -- it requires advanced knowledge of *Menagerie*'s data structure to use effectively, and likely some practice too.
+Don't worry if this is confusing at first! `"map"` one of the more advanced operators -- it requires advanced knowledge of *Menagerie*'s data structure to use effectively, and likely some practice too.
 
 ### filter
 
-Our final and most complicated data operator (for now!) is `filter`. Unlike `get` and `map`, it has one form only:
+Our final and most complicated data operator (for now!) is `"filter"`. Unlike `"get"` and `"map"`, it has one form only:
 
-```
+```json
 { "filter": [
   "$garden.monsters",
   { ">": [
