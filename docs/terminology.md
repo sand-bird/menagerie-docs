@@ -43,9 +43,9 @@ A programming term discussed in the section on [definitions vs. instances](#a-no
 
 #### Entity ID
 
-Part of the [**schema**](#schema) for every [**type**](#entity-type) of [**Entity**](#entity--entity), which means that every [**data definition**](#data-definition) must contain an **Entity ID**. 
+An **Entity ID** is a unique identifier for a (capital-E) [**Entity**](#entity--entity). Every **Entity** needs its own identifier, which means that every [**Entity definition**](#data-definition) *must* contain contain an **Entity ID**.
 
-An **Entity ID** is a unique identifier for the **Entity** you are defining in the data file, and should be a *human-readable string*, like `pufig` or `fluffy_tuft`. (Conventionally, we use underscores to represent spaces.) If multiple data files are found with the same **Entity ID** when *Menagerie* loads, it will try to merge their content; see the chapter on [Data Loading](#) for more info.
+**Entity IDs** should be *human-readable strings*, like `pufig` or `fluffy_tuft`. (Conventionally, we use lowercase for **Entity IDs**, with underscores to represent spaces.) If multiple **data definitions** are found with the same **Entity ID** when *Menagerie* loads, it will try to merge their content; see the chapter on [Data Loading](#) for more info.
 
 #### Unique ID
 
