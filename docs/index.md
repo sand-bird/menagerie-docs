@@ -1,9 +1,10 @@
 # Introduction
 
-Hi there! If you're interested in modding *Menagerie*, you're in the right place. This here is the **Menagerie Guidebook**, a *luxuriously detailed* reference document for *Menagerie* content creation. 
+Hi there! If you're interested in modding *Menagerie*, you're in the right place. This is the **Menagerie Guidebook**, a *luxuriously detailed* reference document for *Menagerie* content creation. 
 
 I put this book together as a reference for myself over the course of developing the game. It's split into two main parts: the **[General Information](#)** section details the nuts and bolts of *Menagerie*'s data files, while the **[Data Specifications](#)** section details the *schemas* -- lists of all required *and* optional properties, and the types of information they should contain -- for every kind of Entity in the game, with plenty of explanations and examples for each.
 
+(organization note: separate reference and guide sections and links to both here, framed as "learn by doing" or "understand first" approaches)
 
 ### How to Use This Guide
 
