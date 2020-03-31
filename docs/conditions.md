@@ -1,6 +1,10 @@
 # Conditions 
 
-Many things in *Menagerie* only happen or become available under certain circumstances. A flower that only blooms when it's raining on a Tuesday, a collection of items that merchants will only sell when you've completed a certain number of requests for them, or a monster that evolves into one form when its intelligence is above a certain level, and a different form otherwise -- the possibilities are pretty much endless.
+**Conditions** let us describe events or behaviors that only happen or become available under specific circumstances. For example:
+
+- A flower that only blooms when it's raining on a Tuesday
+- A collection of items that merchants will only sell when you've completed a certain number of requests for them
+- A monster that evolves into a certain form only when its intelligence is high enough
 
 These **conditions** are a property of the [entity](/terminology/#entity-entity) they affect, so they're defined in the entity's [data file](/terminology/#data-file) using a special **condition syntax** specific to *Menagerie*. As a simple example, here's a condition requiring that the player have at least five thousand aster, the game's currency:
 
@@ -16,14 +20,10 @@ Of special interest in the above example are `"$player.money"` and `">="` -- a *
 
 A condition wouldn't be very useful if it always had the same result. In fact, the whole point of a condition is that its value *depends* on *things that can change* -- **variables**.
 
-Since *Menagerie*'s conditions live in data files, they must adhere to proper JSON syntax, just like the rest of the file. Of course, JSON only supprts a few types of values -- numbers, strings, booleans, arrays, and dictionaries -- and none of those are variables. So, what do we do...?
-
-We use magic!
-
-To denote a variable within a condition, we just use a plain ol' string representing the variable name. The magic happens when we *annotate* the string value with the proper **sigil**, such as `$` or `@`, which tells the game code that the string is representing a variable. Whenever the game comes across a condition, it looks for string values marked with sigils, and then *parses* the annotated string into the variable it represents.
+To denote a variable within a condition, we use a string that is *annotated* with a **sigil**, such as `$` or `@`, which tells the game code that the string is representing a variable. Whenever the game comes across a condition, it looks for string values marked with sigils, and then *parses* the annotated string into the variable it represents.
 
 !!! warning
-     You can type a sigil in front of any string you want, of course, though it won't work as a variable unless it actually has something to reference. The game *should* be safe from crashing due to invalid variables, though you can never rule it out completely...
+    You can type a sigil in front of any string you want, of course, though it won't work as a variable unless it actually has something to reference. The game *should* be safe from crashing due to invalid variables, though you can never rule it out completely...
 
 ### Global Variables
 
@@ -105,9 +105,7 @@ A data file is like a blueprint. We can think of *Menagerie*'s garden as a plann
 Of course, a house is more than its blueprint -- the interior decorations, the landscaping, construction details like roof color and floor tiles, and of course the people living in it are all "house properties" that have nothing to do with the blueprint, and that make every home unique. In just the same way, an individual monster in *Menagerie* has many "monster properties" that aren't specified in the blueprint -- the data file -- and that help to make it distinct from other monsters of the same species. These properties are our **local variables**.
 
 !!! note
-    I'm using monsters as examples because -- as the most complicated of *Menagerie*'s entities -- they have by far the most local variables, so this section is most relevant to them. 
-    
-    A complete list of local variables for each entity type, and how to use them, can be found on that entity's page in the **Data Specifications** section of this guide.
+    I'm using monsters as examples because -- as the most complicated of *Menagerie*'s entities -- they have by far the most local variables, so this section is most relevant to them. A complete list of local variables for each entity type, and how to use them, can be found on that entity's page in the **Data Specifications** section of this guide.
 
 A local variable is prefixed by the sigil `@`, like so:
 
